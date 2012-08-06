@@ -20,7 +20,8 @@ class SpaceGravityMain(object):
     def __init__(self, width=1024, height=768):
         pygame.init()
 
-        Options.Video.width = width
+        Options.Video.view_width = int(width * 0.9)
+        Options.Video.full_width = width
         Options.Video.height = height
 
         pygame.key.set_repeat(30, 30)

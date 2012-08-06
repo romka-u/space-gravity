@@ -3,6 +3,7 @@ from player import Player
 from gameutil import dist, place
 from planet import Planet
 from bullet import Bullet
+from options import Options
 from pygame.locals import *
 
 import random
@@ -49,8 +50,8 @@ class Game(object):
             while True:
                 place(pl)
                 p = self.planets
-                if any(dist(pl, p[i]) <
-                       pl.rad + pl.rad + self.PLAYERS_GAP
+                if any(dist(pl, self.players[i]) <
+                       pl.rad + self.players[i].rad + self.PLAYERS_GAP
                        for i in xrange(ind)): continue
                 if all(dist(pl, p[i]) >
                        pl.rad + p[i].rad + self.PLANETS_GAP
@@ -104,6 +105,12 @@ class Game(object):
         if self.bullet is not None:
             pygame.draw.circle(screen, (255, 255, 255),
                 (int(self.bullet.x), int(self.bullet.y)), 3)
+
+        # draw panel
+        pygame.draw.line(screen, (255, 255, 255),
+            (Options.Video.view_width, 0),
+            (Options.Video.view_width, Options.Video.height),
+            2)
             
 
     def process_tap(self, coord):

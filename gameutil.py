@@ -4,7 +4,7 @@ from options import Options
 import math
 
 def place(entity):
-    entity.x = rand_pos(0, Options.Video.width, entity.rad)
+    entity.x = rand_pos(0, Options.Video.view_width, entity.rad)
     entity.y = rand_pos(0, Options.Video.height, entity.rad)
 
 

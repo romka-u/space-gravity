@@ -23,5 +23,5 @@ class Bullet(object):
 
     def is_visible(self):
         return self.x > 0 and self.y > 0 and\
-               self.x < Options.Video.width and\
+               self.x < Options.Video.view_width and\
                self.y < Options.Video.height
