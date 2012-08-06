@@ -106,6 +106,12 @@ class Game(object):
                 (int(self.bullet.x), int(self.bullet.y)), 3)
             
 
+    def process_tap(self, coord):
+        pl = self.players[self.active_player]
+        x, y = coord[0], coord[1]
+        pl.heading = math.pi / 2 - math.atan2(x - pl.x, y - pl.y)
+
+
     def process_key(self, key):
         pl = self.players[self.active_player]
         if key == K_LEFT: pl.heading -= 0.037

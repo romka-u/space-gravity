@@ -7,6 +7,11 @@ from options import Options
 from game import Game
 import sys
 
+try:
+    import android
+except:
+    android = None
+
 if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
 
@@ -19,6 +24,11 @@ class SpaceGravityMain(object):
         Options.Video.height = height
 
         pygame.key.set_repeat(30, 30)
+
+        if android:
+            android.init()
+            android.map_key(android.KEYCODE_BACK, pygame.K_ESCAPE)
+            android.map_key(android.KEYCODE_MENU, pygame.K_SPACE)
         
         self.game = Game()
         self.screen = pygame.display.set_mode((width, height))
@@ -29,8 +39,13 @@ class SpaceGravityMain(object):
         clock = pygame.time.Clock()
         """This is the main loop of the game"""
         while True:
+
+            if android:
+                if android.check_pause():
+                    android.wait_for_resume()
+
             clock.tick(70)
-            pygame.display.set_caption("FPS: %.3f" % clock.get_fps())
+            # pygame.display.set_caption("FPS: %.3f" % clock.get_fps())
             self.process_events()
             self.game.move_objects()
             self.draw()
@@ -45,6 +60,9 @@ class SpaceGravityMain(object):
                 if event.key == K_ESCAPE: sys.exit(0)
                 self.game.process_key(event.key)
 
+            if event.type == MOUSEBUTTONDOWN:
+                self.game.process_tap(pygame.mouse.get_pos())
+
 
     def draw(self):
         self.screen.fill((0, 0, 0))
@@ -52,6 +70,10 @@ class SpaceGravityMain(object):
         pygame.display.flip()
 
 
-if __name__ == "__main__":
-    instance = SpaceGravityMain(1024, 768)
+# main procedure
+def main():
+    instance = SpaceGravityMain(800, 480)
     instance.main()
+
+if __name__ == "__main__":
+    main()

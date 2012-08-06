@@ -6,7 +6,7 @@ class Planet:
     
     def __init__(self):
         MIN_PLANET_RAD = 15
-        MAX_PLANET_RAD = 180
+        MAX_PLANET_RAD = 120
         self.rad = randint(MIN_PLANET_RAD, MAX_PLANET_RAD)
         self.density = randint(20, 50)
         self.force = self.rad ** 2 * self.density
