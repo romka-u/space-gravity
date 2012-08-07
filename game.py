@@ -101,7 +101,7 @@ class Game(object):
 
     def move_objects(self):
         if self.bullet is not None:
-            if not self.bullet.is_visible():
+            if not self.bullet.is_visible_far():
                 self.bullet = None
                 self.active_player ^= 1
                 return
@@ -148,20 +148,31 @@ class Game(object):
             points = [by_angle(an), by_angle(an+2.7), by_angle(an-2.7)]
             pygame.draw.polygon(screen, player.color, points, 2)"""
 
+        coord = lambda x, y: (int(x), int(y))
+        scale = 1
+        if self.bullet is not None and\
+           not self.bullet.is_visible_near() and\
+           self.bullet.is_visible_far():
+            scale = 3
+            coord = lambda x, y: (
+                int(x / 3 + Options.Video.view_width / 3.0),
+                int(y / 3 + Options.Video.height / 3.0)
+            )
+
         for player in self.players:
             angle = -player.heading / math.pi * 180
-            rotated = pygame.transform.rotate(self.images.spaceship, angle)
+            rotated = pygame.transform.rotozoom(self.images.spaceship, angle, 1.0 / scale)
             rect = rotated.get_rect()
-            rect.center = (player.x, player.y)
+            rect.center = coord(player.x, player.y)
             screen.blit(rotated, rect)
 
         for planet in self.planets:
             pygame.draw.circle(screen, (0, 20 + planet.density * 2, 0),
-                (planet.x, planet.y), planet.rad)
+                coord(planet.x, planet.y), planet.rad / scale)
 
         if self.bullet is not None:
             pygame.draw.circle(screen, (255, 255, 255),
-                (int(self.bullet.x), int(self.bullet.y)), 3)
+                coord(self.bullet.x, self.bullet.y), 3 / scale)
 
         # draw panel
         pygame.draw.line(screen, (255, 255, 255),
@@ -236,7 +247,10 @@ class Game(object):
         self.was_motion = True
 
         if self.is_power_box_tapped:
-            pl.change_power(-0.02 * min(rel[1], 3))
+            dy = rel[1]
+            if dy < -2: dy = -2
+            if dy > 2: dy = 2
+            pl.change_power(-0.02 * dy)
 
         if self.is_field_tapped:
             if abs(rel[0]) > abs(rel[1]):

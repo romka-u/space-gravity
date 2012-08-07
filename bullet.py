@@ -20,7 +20,15 @@ class Bullet(object):
         self.y += self.dy
         
 
-    def is_visible(self):
+    def is_visible_near(self):
         return self.x > 0 and self.y > 0 and\
                self.x < Options.Video.view_width and\
                self.y < Options.Video.height
+
+
+    def is_visible_far(self):
+        width = Options.Video.view_width
+        height = Options.Video.height
+
+        return self.x > -width and self.y > -height and\
+               self.x < 2*width and self.y < 2*height
