@@ -11,6 +11,11 @@ import random
 import pygame
 import math
 
+try:
+    import android
+except:
+    android = None
+
 class Game(object):
 
     PLANETS_GAP = 30
@@ -116,6 +121,8 @@ class Game(object):
                 if dist(player, self.bullet) < Player.PLAYER_RAD:
                     self.bullet = None
                     self.init_round()
+                    if android:
+                        android.vibrate(1)
                     return
                     # score 1 point to active_player
 

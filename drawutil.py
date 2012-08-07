@@ -11,4 +11,4 @@ def fill_gradient(screen, rect, top_color, bottom_color):
                           for tc, r in zip(top_color, rate))
         pygame.draw.line(screen, cur_color,
             (rect.left, rect.top + line),
-            (rect.right, rect.top + line))
+            (rect.right - 1, rect.top + line))
