@@ -217,8 +217,6 @@ class Game(object):
         if coord[0] >= Options.Video.view_width:
             # tap at the panel
             if self.Boxes.power_box.collidepoint(coord):
-                # pl.set_power((self.Boxes.power_box.bottom - coord[1]) * 1.0\
-                #              / self.Boxes.power_box.height)
                 self.is_power_box_tapped = True
                 pygame.mouse.get_rel()
 
@@ -231,10 +229,16 @@ class Game(object):
 
 
     def process_up(self, coord):
-        if not self.was_motion and self.is_field_tapped:
-            x, y = self.last_x, self.last_y
+        if not self.was_motion:
             pl = self.players[self.active_player]
-            pl.heading = math.pi / 2 - math.atan2(x - pl.x, y - pl.y)
+            if self.is_field_tapped:
+                x, y = self.last_x, self.last_y
+                pl.heading = math.pi / 2 - math.atan2(x - pl.x, y - pl.y)
+
+            if self.is_power_box_tapped:
+                pl.set_power((self.Boxes.power_box.bottom - coord[1]) * 1.0\
+                             / self.Boxes.power_box.height)
+        
 
         self.is_power_box_tapped = False
         self.is_field_tapped = False
