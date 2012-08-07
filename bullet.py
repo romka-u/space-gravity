@@ -4,11 +4,10 @@ import math
 
 class Bullet(object):
 
-    def __init__(self, x, y, heading):
-        INITIAL_SPEED = 2.5
+    def __init__(self, x, y, heading, speed):
         self.x, self.y = x, y
-        self.dx = math.cos(heading) * INITIAL_SPEED
-        self.dy = math.sin(heading) * INITIAL_SPEED
+        self.dx = math.cos(heading) * speed
+        self.dy = math.sin(heading) * speed
 
 
     def turn(self, ndx, ndy):
