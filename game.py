@@ -5,6 +5,7 @@ from drawutil import fill_gradient
 from planet import Planet
 from bullet import Bullet
 from options import Options
+from image_holder import ImageHolder
 from pygame.locals import *
 
 import random
@@ -28,6 +29,7 @@ class Game(object):
         self.first_player = 0
 
         self.init_round()
+        self.images = ImageHolder()
 
         # Init panel coordinates
         width = Options.Video.full_width - Options.Video.view_width - 3
@@ -120,6 +122,13 @@ class Game(object):
             self.bullet.turn(ndx/320, ndy/320)
             self.bullet.move()
 
+            for planet in self.planets:
+                d = dist(planet, self.bullet)
+                if d < planet.rad:
+                    self.bullet = None
+                    self.active_player ^= 1
+                    return
+
             for player in self.players:
                 if dist(player, self.bullet) < Player.PLAYER_RAD:
                     self.bullet = None
@@ -131,17 +140,24 @@ class Game(object):
 
 
     def draw(self, screen):
-        for planet in self.planets:
-            pygame.draw.circle(screen, (0, 20 + planet.density * 2, 0),
-                (planet.x, planet.y), planet.rad)
-
-        for player in self.players:
+        """for player in self.players:
             by_angle = lambda an: (player.x + math.cos(an) * Player.PLAYER_RAD,
                                    player.y + math.sin(an) * Player.PLAYER_RAD)
 
             an = player.heading
             points = [by_angle(an), by_angle(an+2.7), by_angle(an-2.7)]
-            pygame.draw.polygon(screen, player.color, points, 2)
+            pygame.draw.polygon(screen, player.color, points, 2)"""
+
+        for player in self.players:
+            angle = -player.heading / math.pi * 180
+            rotated = pygame.transform.rotate(self.images.spaceship, angle)
+            rect = rotated.get_rect()
+            rect.center = (player.x, player.y)
+            screen.blit(rotated, rect)
+
+        for planet in self.planets:
+            pygame.draw.circle(screen, (0, 20 + planet.density * 2, 0),
+                (planet.x, planet.y), planet.rad)
 
         if self.bullet is not None:
             pygame.draw.circle(screen, (255, 255, 255),
@@ -220,7 +236,7 @@ class Game(object):
         self.was_motion = True
 
         if self.is_power_box_tapped:
-            pl.change_power(-0.02 * rel[1])
+            pl.change_power(-0.02 * min(rel[1], 3))
 
         if self.is_field_tapped:
             if abs(rel[0]) > abs(rel[1]):

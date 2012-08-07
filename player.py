@@ -1,7 +1,7 @@
 
 class Player(object):
 
-    PLAYER_RAD = 25
+    PLAYER_RAD = 23
     MAX_BULLET_POWER = 10.0
     MIN_BULLET_POWER = 1.0
     TOTAL_POWER = MAX_BULLET_POWER - MIN_BULLET_POWER
