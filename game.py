@@ -65,7 +65,6 @@ class Game(object):
     
     def gen_planets(self):
         planets_count = random.randint(4, 8)
-        planets_count = 1
         while True:
             self.planets = [Planet()
                             for _ in xrange(planets_count)]
@@ -175,8 +174,18 @@ class Game(object):
 
     def process_tap(self, coord):
         pl = self.players[self.active_player]
-        x, y = coord[0], coord[1]
-        pl.heading = math.pi / 2 - math.atan2(x - pl.x, y - pl.y)
+
+        if coord[0] >= Options.Video.view_width:
+            # tap at the panel
+            if self.Boxes.power_box.collidepoint(coord):
+                pl.set_power((self.Boxes.power_box.bottom - coord[1]) * 1.0\
+                             / self.Boxes.power_box.height)
+            if self.Boxes.fire_button_box.collidepoint(coord):
+                self.try_fire()
+        else:
+            # tap at the field
+            x, y = coord[0], coord[1]
+            pl.heading = math.pi / 2 - math.atan2(x - pl.x, y - pl.y)
 
 
     def process_key(self, key):
@@ -185,8 +194,12 @@ class Game(object):
         if key == K_RIGHT: pl.heading += 0.037
         if key == K_UP: pl.change_power(+0.05)
         if key == K_DOWN: pl.change_power(-0.05)
-        if key == K_SPACE:
-            if self.bullet is None:
-                self.bullet = Bullet(pl.x + math.cos(pl.heading) * Player.PLAYER_RAD,
-                                     pl.y + math.sin(pl.heading) * Player.PLAYER_RAD,
-                                     pl.heading, pl.power)
+        if key == K_SPACE: self.try_fire()
+
+
+    def try_fire(self):
+        pl = self.players[self.active_player]
+        if self.bullet is None:
+            self.bullet = Bullet(pl.x + math.cos(pl.heading) * Player.PLAYER_RAD,
+                                 pl.y + math.sin(pl.heading) * Player.PLAYER_RAD,
+                                 pl.heading, pl.power)
