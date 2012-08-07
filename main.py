@@ -64,6 +64,12 @@ class SpaceGravityMain(object):
             if event.type == MOUSEBUTTONDOWN:
                 self.game.process_tap(pygame.mouse.get_pos())
 
+            if event.type == MOUSEBUTTONUP:
+                self.game.process_up(pygame.mouse.get_pos())
+
+            if event.type == MOUSEMOTION:
+                self.game.process_motion()
+
 
     def draw(self):
         self.screen.fill((0, 0, 0))

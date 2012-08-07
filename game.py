@@ -57,6 +57,9 @@ class Game(object):
             sep_y2 - sep_y1 - 6
         )
 
+        self.is_power_box_tapped = False
+        self.is_field_tapped = False
+
 
     def init_round(self):
         self.gen_planets()
@@ -181,18 +184,53 @@ class Game(object):
 
     def process_tap(self, coord):
         pl = self.players[self.active_player]
+        self.was_motion = False
+        self.last_x, self.last_y = coord[0], coord[1]
 
         if coord[0] >= Options.Video.view_width:
             # tap at the panel
             if self.Boxes.power_box.collidepoint(coord):
-                pl.set_power((self.Boxes.power_box.bottom - coord[1]) * 1.0\
-                             / self.Boxes.power_box.height)
+                # pl.set_power((self.Boxes.power_box.bottom - coord[1]) * 1.0\
+                #              / self.Boxes.power_box.height)
+                self.is_power_box_tapped = True
+                pygame.mouse.get_rel()
+
             if self.Boxes.fire_button_box.collidepoint(coord):
                 self.try_fire()
         else:
             # tap at the field
-            x, y = coord[0], coord[1]
+            self.is_field_tapped = True
+            pygame.mouse.get_rel()
+
+
+    def process_up(self, coord):
+        if not self.was_motion and self.is_field_tapped:
+            x, y = self.last_x, self.last_y
+            pl = self.players[self.active_player]
             pl.heading = math.pi / 2 - math.atan2(x - pl.x, y - pl.y)
+
+        self.is_power_box_tapped = False
+        self.is_field_tapped = False
+        self.was_motion = False;
+
+
+    def process_motion(self):
+        rel = pygame.mouse.get_rel()
+        pl = self.players[self.active_player]
+        self.was_motion = True
+
+        if self.is_power_box_tapped:
+            pl.change_power(-0.02 * rel[1])
+
+        if self.is_field_tapped:
+            if abs(rel[0]) > abs(rel[1]):
+                delta = rel[0]
+                if math.sin(pl.heading) > 0: delta = -delta
+            else:
+                delta = rel[1]
+                if math.cos(pl.heading) < 0: delta = -delta
+
+            pl.heading += delta * 0.002
 
 
     def process_key(self, key):
