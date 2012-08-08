@@ -31,8 +31,8 @@ class SpaceGravityMain(object):
             android.map_key(android.KEYCODE_BACK, pygame.K_ESCAPE)
             android.map_key(android.KEYCODE_MENU, pygame.K_SPACE)
         
-        self.game = Game()
         self.screen = pygame.display.set_mode((width, height))
+        self.game = Game()
 
 
     def main(self):
@@ -79,7 +79,7 @@ class SpaceGravityMain(object):
 
 # main procedure
 def main():
-    instance = SpaceGravityMain(800, 480)
+    instance = SpaceGravityMain(1200, 720)
     instance.main()
 
 if __name__ == "__main__":

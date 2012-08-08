@@ -10,4 +10,5 @@ class Planet:
         self.rad = randint(MIN_PLANET_RAD, MAX_PLANET_RAD)
         self.density = randint(20, 50)
         self.force = self.rad ** 2 * self.density
+        self.type = randint(0, 3)
         place(self)

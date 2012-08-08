@@ -136,8 +136,14 @@ class Game(object):
             screen.blit(rotated, rect)
 
         for planet in self.planets:
-            pygame.draw.circle(screen, (0, 20 + planet.density * 2, 0),
-                coord(planet.x, planet.y), planet.rad / scale)
+            # pygame.draw.circle(screen, (0, 20 + planet.density * 2, 0),
+            #     coord(planet.x, planet.y), planet.rad / scale)
+            scaled = pygame.transform.scale(self.images.planets[planet.type], 
+                (planet.rad * 2 / scale + 1, planet.rad * 2 / scale + 1))
+            rect = scaled.get_rect()
+            rect.center = coord(planet.x, planet.y)
+            screen.blit(scaled, rect)
+
 
         if self.bullet is not None:
             pygame.draw.circle(screen, (255, 255, 255),
@@ -205,7 +211,7 @@ class Game(object):
                 pl.heading = math.pi / 2 - math.atan2(x - pl.x, y - pl.y)
 
             if self.is_power_box_tapped:
-                pl.set_power((self.Boxes.power_box.bottom - coord[1]) * 1.0\
+                pl.set_power((self.Boxes.power_box.bottom - self.last_y) * 1.0\
                              / self.Boxes.power_box.height)
         
 
