@@ -2,13 +2,12 @@
 from player import Player
 from gameutil import dist, place
 from drawutil import fill_gradient
-from planet import Planet
 from bullet import Bullet
 from options import Options
 from image_holder import ImageHolder
+from generators import generate_round
 from pygame.locals import *
 
-import random
 import pygame
 import math
 
@@ -18,9 +17,6 @@ except:
     android = None
 
 class Game(object):
-
-    PLANETS_GAP = 30
-    PLAYERS_GAP = 115
 
     class Boxes: pass
 
@@ -64,40 +60,13 @@ class Game(object):
 
 
     def init_round(self):
-        self.gen_planets()
-        self.gen_players()
+        generate_round(self)
 
         self.active_player = self.first_player
         self.first_player = 1 - self.active_player
 
         self.bullet = None
-
     
-    def gen_planets(self):
-        planets_count = random.randint(4, 8)
-        while True:
-            self.planets = [Planet()
-                            for _ in xrange(planets_count)]
-
-            p = self.planets
-            if all(dist(p[i], p[j]) >
-                   p[i].rad + p[j].rad + self.PLANETS_GAP
-                   for i in xrange(planets_count)
-                   for j in xrange(i)): break
-
-
-    def gen_players(self):
-        for ind, pl in enumerate(self.players):
-            while True:
-                place(pl)
-                p = self.planets
-                if any(dist(pl, self.players[i]) <
-                       pl.rad + self.players[i].rad + self.PLAYERS_GAP
-                       for i in xrange(ind)): continue
-                if all(dist(pl, p[i]) >
-                       pl.rad + p[i].rad + self.PLANETS_GAP
-                       for i in xrange(len(p))): break
-
 
     def move_objects(self):
         if self.bullet is not None:
@@ -202,10 +171,10 @@ class Game(object):
         pygame.draw.rect(screen, (255, 255, 255),
             self.Boxes.power_box, 1)
 
-        pygame.draw.rect(screen, (128, 0, 255),
+        pygame.draw.rect(screen, (255, 0, 64),
             self.Boxes.fire_button_box, 1)
 
-        pygame.draw.rect(screen, (255, 0, 128),
+        pygame.draw.rect(screen, (64, 0, 255),
             self.Boxes.extra_button_box, 1)
 
 
