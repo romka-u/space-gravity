@@ -65,10 +65,20 @@ class Game(object):
         self.active_player = self.first_player
         self.first_player = 1 - self.active_player
 
+        for pl in self.players:
+            pl.bonustype = None
+            pl.bonuscolor = None
+
         self.bullet = None
     
 
     def move_objects(self):
+        if self.bonus is not None:
+            b = self.bonus
+            b.dwh += b.delta
+            if b.dwh == b.DELTA_MAX: b.delta = -b.DELTA
+            if b.dwh == -b.DELTA_MAX: b.delta = b.DELTA
+
         if self.bullet is not None:
             if not self.bullet.is_visible_far():
                 self.bullet = None
@@ -93,7 +103,7 @@ class Game(object):
 
             for planet in self.planets:
                 d = dist(planet, self.bullet)
-                if d < planet.rad:
+                if d <= planet.rad:
                     self.bullet = None
                     self.active_player ^= 1
                     return
@@ -106,6 +116,15 @@ class Game(object):
                         android.vibrate(1)
                     return
                     # score 1 point to active_player
+
+            if self.bonus is not None:
+                d = dist(self.bonus, self.bullet)
+                if d <= self.bonus.rad + 1:
+                    self.players[self.active_player].bonustype = self.bonus.type
+                    self.players[self.active_player].bonuscolor = self.bonus.color
+                    self.bonus = None
+                    self.bullet = None
+                    return
 
 
     def draw(self, screen):
@@ -144,6 +163,17 @@ class Game(object):
             rect.center = coord(planet.x, planet.y)
             screen.blit(scaled, rect)
 
+        if self.bonus is not None:
+            b = self.bonus
+            dw = b.dwh / 10
+            dh = -dw
+            rect = pygame.Rect(
+                coord(b.x - b.rad - dw, b.y - b.rad - dh),
+                ((b.rad + dw) * 2 / scale, (b.rad + dh) * 2 / scale)
+            )
+            # print rect
+            # print b.x, b.y, b.rad, b.dwh, "->", dw, dh
+            pygame.draw.ellipse(screen, self.bonus.color, rect)
 
         if self.bullet is not None:
             pygame.draw.circle(screen, (255, 255, 255),
@@ -179,9 +209,14 @@ class Game(object):
 
         pygame.draw.rect(screen, (255, 0, 64),
             self.Boxes.fire_button_box, 1)
+        
+        if pl.bonustype is not None:
+            pygame.draw.rect(screen, pl.bonuscolor,
+                self.Boxes.extra_button_box, 1)
 
-        pygame.draw.rect(screen, (64, 0, 255),
-            self.Boxes.extra_button_box, 1)
+            circle_rad = int(self.Boxes.extra_button_box.width * 0.5 * 0.8)
+            pygame.draw.circle(screen, pl.bonuscolor,
+                self.Boxes.extra_button_box.center, circle_rad)
 
 
     def process_tap(self, coord):

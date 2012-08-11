@@ -1,5 +1,6 @@
 
 from planet import Planet
+from bonus import Bonus
 from gameutil import dist, place
 
 import random
@@ -15,7 +16,8 @@ def generate_round(game):
     while True:
         gen_planets(game)
         gen_players(game)
-        if check_difficulty(game.planets, game.players): break
+        gen_bonus(game)
+        if check_difficulty(game.planets, game.players, game.bonus): break
       
 
 def gen_planets(game):    
@@ -43,23 +45,41 @@ def gen_players(game):
                    pl.rad + p[i].rad + Const.PLANETS_GAP
                    for i in xrange(len(p))): break
 
+def gen_bonus(game):
+    gen = True
+    game.bonus = Bonus()
+    while gen:
+        gen = False
+        place(game.bonus)
 
-def check_difficulty(planets, players):
-    x1, y1 = players[0].x, players[0].y
-    x2, y2 = players[1].x, players[1].y
-    c = dist(players[0], players[1])
-    A, B = y2-y1, x1-x2
-    C = -x1 * A - y1 * B
+        for pl in game.players + game.planets:
+            if dist(pl, game.bonus) < pl.rad + game.bonus.rad + 2:
+                gen = True
+                break
 
-    good = False
-    for p in planets:
-        a = dist(players[0], p)
-        b = dist(players[1], p)
-        if a*a + c*c < b*b or b*b + c*c < a*a: continue
-        d = math.fabs(A * p.x + B * p.y + C) / math.sqrt(A*A + B*B)
+def check_difficulty(planets, players, bonus):
+    def is_a_planet_between(planets, obj1, obj2):
+        x1, y1 = obj1.x, obj1.y
+        x2, y2 = obj2.x, obj2.y
+        c = dist(obj1, obj2)
+        A, B = y2-y1, x1-x2
+        C = -x1 * A - y1 * B
+        T = math.sqrt(A*A + B*B)
 
-        if d < Const.CLOSE_DISTANCE + p.rad:
-            good = True
-            break
+        good = False
+        for p in planets:
+            a = dist(obj1, p)
+            b = dist(obj2, p)
+            if a*a + c*c < b*b or b*b + c*c < a*a: continue
+            d = math.fabs(A * p.x + B * p.y + C) / T
 
-    return good
+            if d < Const.CLOSE_DISTANCE + p.rad:
+                good = True
+                break
+
+        return good
+
+    """ Body of check_difficulty function """
+    return is_a_planet_between(planets, players[0], players[1]) and\
+           is_a_planet_between(planets, players[0], bonus) and\
+           is_a_planet_between(planets, players[1], bonus)
