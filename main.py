@@ -30,7 +30,7 @@ class SpaceGravityMain(object):
             android.init()
             android.map_key(android.KEYCODE_BACK, pygame.K_ESCAPE)
             android.map_key(android.KEYCODE_MENU, pygame.K_SPACE)
-        
+
         self.screen = pygame.display.set_mode((width, height))
         self.game = Game()
 

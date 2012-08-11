@@ -217,7 +217,7 @@ class Game(object):
 
         self.is_power_box_tapped = False
         self.is_field_tapped = False
-        self.was_motion = False;
+        self.was_motion = False
 
 
     def process_motion(self):
