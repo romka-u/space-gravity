@@ -5,6 +5,7 @@ from drawutil import fill_gradient
 from bullet import Bullet
 from options import Options
 from image_holder import ImageHolder
+from bonus import Bonus
 from generators import generate_round
 from pygame.locals import *
 
@@ -67,7 +68,6 @@ class Game(object):
 
         for pl in self.players:
             pl.bonustype = None
-            pl.bonuscolor = None
 
         self.bullet = None
     
@@ -121,7 +121,6 @@ class Game(object):
                 d = dist(self.bonus, self.bullet)
                 if d <= self.bonus.rad + 1:
                     self.players[self.active_player].bonustype = self.bonus.type
-                    self.players[self.active_player].bonuscolor = self.bonus.color
                     self.bonus = None
                     self.bullet = None
                     return
@@ -136,6 +135,8 @@ class Game(object):
             points = [by_angle(an), by_angle(an+2.7), by_angle(an-2.7)]
             pygame.draw.polygon(screen, player.color, points, 2)"""
 
+        pl = self.players[self.active_player]
+        
         coord = lambda x, y: (int(x), int(y))
         scale = 1
         if self.bullet is not None and\
@@ -173,10 +174,13 @@ class Game(object):
             )
             # print rect
             # print b.x, b.y, b.rad, b.dwh, "->", dw, dh
-            pygame.draw.ellipse(screen, self.bonus.color, rect)
+            pygame.draw.ellipse(screen, Bonus.color(self.bonus.type), rect)
 
         if self.bullet is not None:
-            pygame.draw.circle(screen, (255, 255, 255),
+            bullet_color = (255, 255, 255)
+            if self.bullet.bonustype is not None:
+                bullet_color = Bonus.color(self.bullet.bonustype)
+            pygame.draw.circle(screen, bullet_color,
                 coord(self.bullet.x, self.bullet.y), 3 / scale)
 
         # draw panel
@@ -195,7 +199,6 @@ class Game(object):
         half_box.centery += self.Boxes.power_box.height / 2
         fill_gradient(screen, half_box, (255, 255, 0), (0, 255, 0))
 
-        pl = self.players[self.active_player]
         coeff = pl.get_rest_power_coeff()
         empty_box = Rect(
             self.Boxes.power_box.topleft,
@@ -211,11 +214,11 @@ class Game(object):
             self.Boxes.fire_button_box, 1)
         
         if pl.bonustype is not None:
-            pygame.draw.rect(screen, pl.bonuscolor,
+            pygame.draw.rect(screen, Bonus.color(pl.bonustype),
                 self.Boxes.extra_button_box, 1)
 
             circle_rad = int(self.Boxes.extra_button_box.width * 0.5 * 0.8)
-            pygame.draw.circle(screen, pl.bonuscolor,
+            pygame.draw.circle(screen, Bonus.color(pl.bonustype),
                 self.Boxes.extra_button_box.center, circle_rad)
 
 
@@ -232,6 +235,10 @@ class Game(object):
 
             if self.Boxes.fire_button_box.collidepoint(coord):
                 self.try_fire()
+
+            if pl.bonustype is not None and\
+                self.Boxes.extra_button_box.collidepoint(coord):
+                self.try_fire(pl.bonustype)
         else:
             # tap at the field
             self.is_field_tapped = True
@@ -286,9 +293,10 @@ class Game(object):
         if key == K_SPACE: self.try_fire()
 
 
-    def try_fire(self):
+    def try_fire(self, bonustype=None):
         pl = self.players[self.active_player]
         if self.bullet is None:
             self.bullet = Bullet(pl.x + math.cos(pl.heading) * Player.PLAYER_RAD,
                                  pl.y + math.sin(pl.heading) * Player.PLAYER_RAD,
-                                 pl.heading, pl.power)
+                                 pl.heading, pl.power, bonustype)
+            if bonustype is not None: pl.bonustype = None

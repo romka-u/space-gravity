@@ -12,7 +12,6 @@ class Player(object):
         self.heading = 0
         self.power = 100
         self.color = color
-        self.bonuses = []
         self.power = 4.5
 
 

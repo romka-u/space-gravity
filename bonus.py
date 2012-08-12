@@ -7,14 +7,16 @@ class Bonus(object):
 		ELECTRO = 3
 		AIMING = 4
 		TRIPLE = 5
-
+ 
 		types = (SHRINK, ENLARGE, ELECTRO, AIMING, TRIPLE)
 		colors = ((0, 128, 255), (128, 0, 255), (128, 255, 255), (128, 255, 0), (255, 128, 128))
 
+	@staticmethod
+	def color(type):
+		return Bonus.BonusType.colors[Bonus.BonusType.types.index(type)]
+
 	def __init__(self):
-		t = random.randint(0, len(self.BonusType.types)-1)
-		self.type = self.BonusType.types[t]
-		self.color = self.BonusType.colors[t]
+		self.type = random.choice(self.BonusType.types)
 		self.rad = 10
 
 		self.DELTA = 2

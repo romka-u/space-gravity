@@ -79,7 +79,7 @@ class SpaceGravityMain(object):
 
 # main procedure
 def main():
-    instance = SpaceGravityMain(1200, 720)
+    instance = SpaceGravityMain(800, 480)
     instance.main()
 
 if __name__ == "__main__":
