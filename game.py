@@ -73,6 +73,10 @@ class Game(object):
     
 
     def move_objects(self):
+        """
+        Moves bonuses and bullets.
+        Checks whether bullet has collided with some other object
+        """
         if self.bonus is not None:
             b = self.bonus
             b.dwh += b.delta
@@ -99,12 +103,30 @@ class Game(object):
 
             for planet in self.planets:
                 d = dist(planet, self.bullet)
+
+                # check if the bullet is near the planet
                 if d < planet.rad:
+
+                    # if player has used BonusType.ENLARGE
                     if self.bullet.bonustype == Bonus.BonusType.ENLARGE:
                         planet.rad += planet.rad / 3
+                        for player in self.players:
+                            if dist(planet, player) < planet.rad + player.rad:
+                                self.bullet = None
+                                if android:
+                                    android.vibrate(1)
+                                self.init_round()
+                                return
+                                # score point
+
+                    # if player has used BonusType.SHRINK
                     if self.bullet.bonustype == Bonus.BonusType.SHRINK:
                         planet.rad -= planet.rad / 3
+
+                    # recalc planet force just in case
                     planet.force = planet.rad ** 2 * planet.density
+
+                    # kill bullet and change player
                     self.bullet = None
                     self.active_player ^= 1
                     return
@@ -133,13 +155,9 @@ class Game(object):
 
 
     def draw(self, screen):
-        """for player in self.players:
-            by_angle = lambda an: (player.x + math.cos(an) * Player.PLAYER_RAD,
-                                   player.y + math.sin(an) * Player.PLAYER_RAD)
-
-            an = player.heading
-            points = [by_angle(an), by_angle(an+2.7), by_angle(an-2.7)]
-            pygame.draw.polygon(screen, player.color, points, 2)"""
+        """
+        Draw everything in game, such as panel, players, planets, bullets, bonuses, status bar.
+        """
 
         pl = self.players[self.active_player]
         
