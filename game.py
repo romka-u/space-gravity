@@ -66,8 +66,8 @@ class Game(object):
         self.active_player = self.first_player
         self.first_player = 1 - self.active_player
 
-        for pl in self.players:
-            pl.bonustype = None
+        # for pl in self.players:
+        #     pl.bonustype = None
 
         self.bullet = None
     
@@ -88,10 +88,6 @@ class Game(object):
             ndx, ndy = 0, 0
             for planet in self.planets:
                 d = dist(planet, self.bullet)
-                if d < planet.rad:
-                    self.bullet = None
-                    self.active_player ^= 1
-                    return
                 angle_to_planet = math.atan2(planet.y - self.bullet.y,
                                              planet.x - self.bullet.x)
                 d = d ** 1.8
@@ -103,13 +99,22 @@ class Game(object):
 
             for planet in self.planets:
                 d = dist(planet, self.bullet)
-                if d <= planet.rad:
+                if d < planet.rad:
+                    if self.bullet.bonustype == Bonus.BonusType.ENLARGE:
+                        planet.rad += planet.rad / 3
+                    if self.bullet.bonustype == Bonus.BonusType.SHRINK:
+                        planet.rad -= planet.rad / 3
+                    planet.force = planet.rad ** 2 * planet.density
                     self.bullet = None
                     self.active_player ^= 1
                     return
 
             for player in self.players:
-                if dist(player, self.bullet) < Player.PLAYER_RAD:
+                gap = 0
+                if self.bullet.bonustype == Bonus.BonusType.ELECTRO and\
+                    player != self.bullet.owner:
+                    gap = 30
+                if dist(player, self.bullet) < Player.PLAYER_RAD + gap:
                     self.bullet = None
                     self.init_round()
                     if android:
@@ -123,6 +128,7 @@ class Game(object):
                     self.players[self.active_player].bonustype = self.bonus.type
                     self.bonus = None
                     self.bullet = None
+                    self.active_player ^= 1
                     return
 
 
@@ -298,5 +304,5 @@ class Game(object):
         if self.bullet is None:
             self.bullet = Bullet(pl.x + math.cos(pl.heading) * Player.PLAYER_RAD,
                                  pl.y + math.sin(pl.heading) * Player.PLAYER_RAD,
-                                 pl.heading, pl.power, bonustype)
+                                 pl.heading, pl.power, bonustype, pl)
             if bonustype is not None: pl.bonustype = None

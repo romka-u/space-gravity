@@ -4,12 +4,13 @@ import math
 
 class Bullet(object):
 
-    def __init__(self, x, y, heading, speed, bonustype):
+    def __init__(self, x, y, heading, speed, bonustype, owner):
         self.x, self.y = x, y
         self.dx = math.cos(heading) * speed
         self.dy = math.sin(heading) * speed
         self.bonustype = bonustype
-
+        self.owner = owner
+        
 
     def turn(self, ndx, ndy):
         self.dx += ndx

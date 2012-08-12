@@ -13,6 +13,7 @@ class Player(object):
         self.power = 100
         self.color = color
         self.power = 4.5
+        self.bonustype = None
 
 
     def get_rest_power_coeff(self):

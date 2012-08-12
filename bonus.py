@@ -8,7 +8,7 @@ class Bonus(object):
 		AIMING = 4
 		TRIPLE = 5
  
-		types = (SHRINK, ENLARGE, ELECTRO, AIMING, TRIPLE)
+		types = (SHRINK, ENLARGE, ELECTRO) #, AIMING, TRIPLE)
 		colors = ((0, 128, 255), (128, 0, 255), (128, 255, 255), (128, 255, 0), (255, 128, 128))
 
 	@staticmethod
