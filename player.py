@@ -14,6 +14,7 @@ class Player(object):
         self.color = color
         self.power = 4.5
         self.bonustype = None
+        self.score = 0
 
 
     def get_rest_power_coeff(self):

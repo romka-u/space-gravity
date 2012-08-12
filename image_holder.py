@@ -6,10 +6,11 @@ import os
 class ImageHolder(object):
 
     def __init__(self):
-        self.spaceship = self.load("spaceship_small.png")
+        self.spaceship = {"red": self.load("spaceship_small_red.png"),
+                          "blue": self.load("spaceship_small_blue.png")}
 
-        planets_names = ["planet2.gif",
-            "planet3.gif", "planet4.gif", "planet5.jpg"]
+        planets_names = ["planet2.gif", "planet6.png",
+            "planet3.gif", "planet4.gif", "planet5.png"]
         self.planets = [self.load(pl) for pl in planets_names]
 
 

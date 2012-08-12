@@ -22,7 +22,7 @@ class Game(object):
     class Boxes: pass
 
     def __init__(self):
-        self.players = [Player((180, 0, 0)), Player((0, 0, 180))]
+        self.players = [Player("red"), Player("blue")]
         self.first_player = 0
 
         self.init_round()
@@ -70,7 +70,18 @@ class Game(object):
         #     pl.bonustype = None
 
         self.bullet = None
-    
+
+
+    def end_round(self, loser):
+        winner = 1 - self.players.index(loser)
+        self.players[winner].score += 1
+
+        self.active_player ^= 1
+        if android:
+            android.vibrate(1)
+
+        self.init_round()
+
 
     def move_objects(self):
         """
@@ -112,10 +123,7 @@ class Game(object):
                         planet.rad += planet.rad / 3
                         for player in self.players:
                             if dist(planet, player) < planet.rad + player.rad:
-                                self.bullet = None
-                                if android:
-                                    android.vibrate(1)
-                                self.init_round()
+                                self.end_round(loser=player)
                                 return
                                 # score point
 
@@ -137,12 +145,8 @@ class Game(object):
                     player != self.bullet.owner:
                     gap = 30
                 if dist(player, self.bullet) < Player.PLAYER_RAD + gap:
-                    self.bullet = None
-                    self.init_round()
-                    if android:
-                        android.vibrate(1)
+                    self.end_round(loser=player)
                     return
-                    # score 1 point to active_player
 
             if self.bonus is not None:
                 d = dist(self.bonus, self.bullet)
@@ -174,14 +178,13 @@ class Game(object):
 
         for player in self.players:
             angle = -player.heading / math.pi * 180
-            rotated = pygame.transform.rotozoom(self.images.spaceship, angle, 1.0 / scale)
+            rotated = pygame.transform.rotozoom(
+                self.images.spaceship[player.color], angle, 1.0 / scale)
             rect = rotated.get_rect()
             rect.center = coord(player.x, player.y)
             screen.blit(rotated, rect)
 
         for planet in self.planets:
-            # pygame.draw.circle(screen, (0, 20 + planet.density * 2, 0),
-            #     coord(planet.x, planet.y), planet.rad / scale)
             scaled = pygame.transform.scale(self.images.planets[planet.type], 
                 (planet.rad * 2 / scale + 1, planet.rad * 2 / scale + 1))
             rect = scaled.get_rect()

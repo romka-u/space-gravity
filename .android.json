@@ -1,0 +1,1 @@
+{"layout": "internal", "orientation": "landscape", "package": "by.romka", "include_pil": false, "name": "Space Gravity", "icon_name": "space-gravity", "version": "0.1.0", "permissions": ["VIBRATE"], "include_sqlite": false, "numeric_version": "100"}
