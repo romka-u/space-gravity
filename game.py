@@ -59,6 +59,8 @@ class Game(object):
         self.is_power_box_tapped = False
         self.is_field_tapped = False
 
+        self.font = pygame.font.SysFont("Droid Sans", 32, bold=True)
+
 
     def init_round(self):
         generate_round(self)
@@ -247,6 +249,22 @@ class Game(object):
             circle_rad = int(self.Boxes.extra_button_box.width * 0.5 * 0.8)
             pygame.draw.circle(screen, Bonus.color(pl.bonustype),
                 self.Boxes.extra_button_box.center, circle_rad)
+
+        # draw scores
+        red_score = "Red score: %d" % self.players[0].score
+        blue_score = "Blue score: %d" % self.players[1].score
+
+        width, height = self.font.size(red_score)
+        label = self.font.render(red_score, True, (192, 0, 0))
+        label_rect = pygame.Rect(5, 5, width, height)
+        screen.blit(label, label_rect)
+
+        width, height = self.font.size(blue_score)
+        label = self.font.render(blue_score, True, (0, 0, 192))
+        label_rect.width, label_rect.height = width, height
+        label_rect.right = Options.Video.view_width - 5
+        screen.blit(label, label_rect)
+        
 
 
     def process_tap(self, coord):
