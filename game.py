@@ -59,8 +59,8 @@ class Game(object):
         self.is_power_box_tapped = False
         self.is_field_tapped = False
 
-        self.font_score = pygame.font.SysFont("Droid Sans", 32, bold=True)
-        self.font_ttl = pygame.font.SysFont("Droid Sans", 24)
+        self.font_score = pygame.font.Font("myfont.ttf", 32)
+        self.font_ttl = pygame.font.Font("myfont.ttf", 20)
 
 
     def init_round(self):
@@ -268,10 +268,10 @@ class Game(object):
         screen.blit(label, label_rect)
 
         if self.bullet is not None:
-            timeout = "Timeout: %d" % (self.bullet.ttl / 3)
+            timeout = "Timeout: %d" % (self.bullet.ttl / 5)
             label_rect.width, label_rect.height = self.font_ttl.size(timeout)
             label_rect.centerx = Options.Video.view_width / 2
-            label_rect.top = 10
+            label_rect.top = 12
             label = self.font_ttl.render(timeout, True, (220, 220, 220))
             screen.blit(label, label_rect)
 

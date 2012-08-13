@@ -10,7 +10,7 @@ class Bullet(object):
         self.dy = math.sin(heading) * speed
         self.bonustype = bonustype
         self.owner = owner
-        self.ttl = 900
+        self.ttl = 750
 
 
     def turn(self, ndx, ndy):
